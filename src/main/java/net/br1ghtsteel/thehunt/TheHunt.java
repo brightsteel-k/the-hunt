@@ -1,13 +1,13 @@
-package net.br1ghtsteel.bitsandblades;
+package net.br1ghtsteel.thehunt;
 
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BitsAndBlades implements ModInitializer {
+public class TheHunt implements ModInitializer {
 
-    public static final String MOD_ID = "bitsandblades";
+    public static final String MOD_ID = "thehunt";
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.

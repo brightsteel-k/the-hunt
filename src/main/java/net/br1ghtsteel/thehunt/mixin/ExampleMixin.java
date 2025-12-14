@@ -1,4 +1,4 @@
-package net.br1ghtsteel.bitsandblades.mixin;
+package net.br1ghtsteel.thehunt.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
