@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "bitsandblades",
+	"version": "${version}",
+	"name": "Bits and Blades",
+	"description": "To spice up your combat system with some cool new medieval weapons!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/bitsandblades/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.br1ghtsteel.bitsandblades.BitsAndBlades"
+		],
+		"client": [
+			"net.br1ghtsteel.bitsandblades.BitsAndBladesClient"
+		],
+		"fabric-datagen": [
+			"net.br1ghtsteel.bitsandblades.BitsAndBladesDataGenerator"
+		]
+	},
+	"mixins": [
+		"bitsandblades.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
