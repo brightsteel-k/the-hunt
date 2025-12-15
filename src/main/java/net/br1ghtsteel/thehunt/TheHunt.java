@@ -1,7 +1,13 @@
 package net.br1ghtsteel.thehunt;
 
+import net.br1ghtsteel.thehunt.entity.ModEntities;
+import net.br1ghtsteel.thehunt.entity.TorivorEntity;
+import net.br1ghtsteel.thehunt.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,5 +26,14 @@ public class TheHunt implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+
+		ModItems.registerModItems();
+
+		FabricDefaultAttributeRegistry.register(ModEntities.TORIVOR_ENTITY, TorivorEntity.createTorivorAttributes());
+	}
+
+	public static void sendChatMessage(String message) {
+		MinecraftClient client = MinecraftClient.getInstance();
+		client.inGameHud.getChatHud().addMessage(Text.literal(message));
 	}
 }
