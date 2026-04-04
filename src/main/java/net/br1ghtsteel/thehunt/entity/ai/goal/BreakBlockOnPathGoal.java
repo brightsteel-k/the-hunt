@@ -17,7 +17,7 @@ import net.minecraft.world.WorldEvents;
 import java.util.EnumSet;
 
 public class BreakBlockOnPathGoal extends Goal {
-    protected MobEntity mob;
+    protected AbstractHunterEntity mob;
     protected BlockPos targetBlockPos = BlockPos.ORIGIN;
     protected BlockState targetBlockState;
 
@@ -76,9 +76,8 @@ public class BreakBlockOnPathGoal extends Goal {
     public void start() {
         super.start();
         this.breakProgress = 0;
-        this.mob.getLookControl().lookAt(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ());
-        this.maxProgress = (int)(targetBlockState.getHardness(mob.getWorld(), targetBlockPos) * 8) + 5;
-        TheHunt.sendChatMessage("Starting BreakBlockGoal.");
+        float f = (targetBlockState.getHardness(mob.getWorld(), targetBlockPos) * 8) + 5;
+        this.maxProgress = (int)(f / this.mob.getMiningSpeed());
     }
 
     @Override
@@ -104,6 +103,7 @@ public class BreakBlockOnPathGoal extends Goal {
         if (!this.mob.handSwinging) {
             this.mob.swingHand(this.mob.getActiveHand());
         }
+        this.mob.getLookControl().lookAt(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 60.0F, 60.0F);
 
         this.breakProgress++;
         int i = (int)((float)this.breakProgress / (float)this.maxProgress * 10.0F);

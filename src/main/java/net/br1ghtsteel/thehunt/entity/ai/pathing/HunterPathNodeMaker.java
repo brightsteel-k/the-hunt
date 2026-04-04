@@ -170,16 +170,19 @@ public class HunterPathNodeMaker extends PathNodeMaker {
         return node != null && !node.visited && (node.penalty >= 0.0F || successor1.penalty < 0.0F);
     }
 
-    protected boolean isValidDiagonalSuccessor(PathNode xNode, @Nullable PathNode zNode, @Nullable PathNode xDiagNode, @Nullable PathNode zDiagNode) {
-        if (zDiagNode == null || xDiagNode == null || zNode == null) {
+    protected boolean isValidDiagonalSuccessor(PathNode pathNode, @Nullable PathNode xNode, @Nullable PathNode zNode, @Nullable PathNode diagNode) {
+        if (diagNode == null || zNode == null || xNode == null) {
             return false;
-        } else if (zDiagNode.visited) {
+        } else if (diagNode.visited) {
             return false;
-        } else if (xDiagNode.y > xNode.y || zNode.y > xNode.y) {
+        } else if (zNode.y > pathNode.y || xNode.y > pathNode.y) {
             return false;
-        } else if (zNode.type != PathNodeType.WALKABLE_DOOR && xDiagNode.type != PathNodeType.WALKABLE_DOOR && zDiagNode.type != PathNodeType.WALKABLE_DOOR) {
-            boolean bl = xDiagNode.type == PathNodeType.FENCE && zNode.type == PathNodeType.FENCE && (double)this.entity.getWidth() < 0.5;
-            return zDiagNode.penalty >= 0.0F && (xDiagNode.y < xNode.y || xDiagNode.penalty >= 0.0F || bl) && (zNode.y < xNode.y || zNode.penalty >= 0.0F || bl);
+        } else if (xNode.type != PathNodeType.WALKABLE_DOOR && zNode.type != PathNodeType.WALKABLE_DOOR && diagNode.type != PathNodeType.WALKABLE_DOOR) {
+            boolean bl = zNode.type == PathNodeType.FENCE && xNode.type == PathNodeType.FENCE && (double)this.entity.getWidth() < 0.5;
+            return diagNode.penalty >= 0.0F
+                    && (zNode.y < pathNode.y || zNode.penalty >= 0.0F || bl)
+                    && (xNode.y < pathNode.y || xNode.penalty >= 0.0F || bl)
+                    && (zNode.type != PathNodeType.BREACH || xNode.type != PathNodeType.BREACH);
         } else {
             return false;
         }
@@ -542,7 +545,7 @@ public class HunterPathNodeMaker extends PathNodeMaker {
                     && !blockState.isIn(BlockTags.WALLS)
                     && (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.OPEN))) {
                 if (!blockState.canPathfindThrough(world, pos, NavigationType.LAND)) {
-                    return PathNodeType.BLOCKED;
+                    return PathNodeType.BREACH;
                 } else {
                     return fluidState.isIn(FluidTags.WATER) ? PathNodeType.WATER : PathNodeType.OPEN;
                 }

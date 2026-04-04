@@ -9,7 +9,10 @@ import net.minecraft.world.World;
 
 public class AbstractHunterEntity extends HostileEntity {
 
-    public AbstractHunterEntity(EntityType<? extends HostileEntity> entityType, World world) {
+    protected float miningSpeed;
+    protected float reachDistance;
+
+    public AbstractHunterEntity(EntityType<? extends HostileEntity> entityType, World world, float miningSpeed, float reachDistance) {
         super(entityType, world);
         this.setPathfindingPenalty(PathNodeType.UNPASSABLE_RAIL, 0.0F);
         this.setPathfindingPenalty(PathNodeType.DAMAGE_OTHER, 8.0F);
@@ -17,11 +20,21 @@ public class AbstractHunterEntity extends HostileEntity {
         this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
-        this.setPathfindingPenalty(PathNodeType.BLOCKED, 64.0F);
+        this.setPathfindingPenalty(PathNodeType.BREACH, 32.0F);
+        this.miningSpeed = miningSpeed;
+        this.reachDistance = reachDistance;
     }
 
     @Override
     protected EntityNavigation createNavigation(World world) {
         return new HunterNavigation(this, world);
+    }
+
+    public float getMiningSpeed() {
+        return this.miningSpeed;
+    }
+
+    public float getReachDistance() {
+        return this.reachDistance;
     }
 }

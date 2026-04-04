@@ -1,26 +1,53 @@
 package net.br1ghtsteel.thehunt.entity.ai.pathing;
 
 import net.br1ghtsteel.thehunt.TheHunt;
+import net.br1ghtsteel.thehunt.entity.AbstractHunterEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.particle.DustColorTransitionParticleEffect;
+import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class HunterNavigation extends EntityNavigation {
-    public HunterNavigation(MobEntity mobEntity, World world) {
-        super(mobEntity, world);
+
+    private AbstractHunterEntity hunterEntity;
+    private DustColorTransitionParticleEffect nodeWalkMarker;
+    private DustColorTransitionParticleEffect nodeBreakMarker;
+
+    public HunterNavigation(AbstractHunterEntity hunterEntity, World world) {
+        super(hunterEntity, world);
+        this.hunterEntity = hunterEntity;
+        this.nodeWalkMarker  = new DustColorTransitionParticleEffect(
+                new Vector3f(235F/255F, 26F/255F, 255F/255F),
+                new Vector3f(0.2F, 0.2F, 0.2F),
+                1.0F
+        );
+        this.nodeBreakMarker  = new DustColorTransitionParticleEffect(
+                new Vector3f(255F/255F, 148F/255F, 50F/255F),
+                new Vector3f(0.2F, 0.2F, 0.2F),
+                1.0F
+        );
     }
 
     @Override
     protected PathNodeNavigator createPathNodeNavigator(int range) {
-        this.nodeMaker = new LandPathNodeMaker();
-        this.nodeMaker.setCanEnterOpenDoors(true);
+        this.nodeMaker = new HunterPathNodeMaker();
         this.nodeMaker.setCanWalkOverFences(false);
         return new PathNodeNavigator(this.nodeMaker, range);
     }
@@ -98,14 +125,13 @@ public class HunterNavigation extends EntityNavigation {
     @Override
     protected void adjustPath() {
         super.adjustPath();
-        if (false) { // Adjusts path to avoid sunlight
-            if (this.world.isSkyVisible(BlockPos.ofFloored(this.entity.getX(), this.entity.getY() + 0.5, this.entity.getZ()))) {
-                return;
-            }
-
+        if (this.entity.getTarget() != null) {
+            LivingEntity target = this.entity.getTarget();
             for (int i = 0; i < this.currentPath.getLength(); i++) {
                 PathNode pathNode = this.currentPath.getNode(i);
-                if (this.world.isSkyVisible(new BlockPos(pathNode.x, pathNode.y, pathNode.z))) {
+                Vec3d nodePos = new Vec3d(pathNode.x, pathNode.y, pathNode.z);
+                Vec3d targetPos = target.getPos().add(target.getVelocity().multiply(3.0F));
+                if (this.hunterEntity.getTarget() != null && targetPos.isInRange(nodePos, this.hunterEntity.getReachDistance() - 1f)) {
                     this.currentPath.setLength(i);
                     return;
                 }
@@ -123,15 +149,27 @@ public class HunterNavigation extends EntityNavigation {
 
     @Override
     public boolean startMovingAlong(@Nullable Path path, double speed) {
-        /*if (path != null) {
-            String message = "Starting along path: - - - - -\n";
+        if (!(this.world instanceof ServerWorld serverWorld)) {
+            return super.startMovingAlong(path, speed);
+        }
+
+        if (path != null) {
             for (int i = 0; i < path.getLength(); i++) {
-                PathNode pathNode = path.getNode(i);
-                message += "-> " + world.getBlockState(pathNode.getBlockPos()).toString() + "\n";
+                PathNodeType pathNodeType = path.getNode(i).type;
+                Vec3d pathNodePos = path.getNode(i).getPos();
+                serverWorld.spawnParticles(
+                        pathNodeType == PathNodeType.BREACH ? this.nodeBreakMarker : this.nodeWalkMarker,
+                        pathNodePos.getX() + 0.5f,
+                        pathNodePos.getY() + 0.2f,
+                        pathNodePos.getZ() + 0.5f,
+                        1,
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                );
             }
-            message += "- - - - - - - - - - - - - -";
-            TheHunt.sendChatMessage(message);
-        }*/
+        }
         return super.startMovingAlong(path, speed);
     }
 }
