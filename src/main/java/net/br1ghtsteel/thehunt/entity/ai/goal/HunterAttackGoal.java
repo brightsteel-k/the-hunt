@@ -3,7 +3,6 @@ package net.br1ghtsteel.thehunt.entity.ai.goal;
 import net.br1ghtsteel.thehunt.entity.AbstractHunterEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.mob.PathAwareEntity;
 
 public class HunterAttackGoal extends MeleeAttackGoal {
 

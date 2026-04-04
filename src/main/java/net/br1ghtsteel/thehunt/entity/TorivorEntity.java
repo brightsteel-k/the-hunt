@@ -1,8 +1,11 @@
 package net.br1ghtsteel.thehunt.entity;
 
+import net.br1ghtsteel.thehunt.TheHunt;
 import net.br1ghtsteel.thehunt.entity.ai.goal.BreakBlockOnPathGoal;
 import net.br1ghtsteel.thehunt.entity.ai.goal.HunterAttackGoal;
+import net.br1ghtsteel.thehunt.item.ModItems;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -10,8 +13,12 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class TorivorEntity extends AbstractHunterEntity {
@@ -24,7 +31,7 @@ public class TorivorEntity extends AbstractHunterEntity {
         return HostileEntity.createHostileAttributes()
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.38F)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
     }
 
     @Override
@@ -33,7 +40,6 @@ public class TorivorEntity extends AbstractHunterEntity {
         this.goalSelector.add(1, new BreakBlockOnPathGoal(this));
         this.goalSelector.add(2, new HunterAttackGoal(this, 1, true));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(8, new LookAroundGoal(this));
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, false));
         this.targetSelector.add(4, new ActiveTargetGoal<>(this, VillagerEntity.class, false));
     }
@@ -51,5 +57,10 @@ public class TorivorEntity extends AbstractHunterEntity {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_SQUID_DEATH;
+    }
+
+    @Override
+    protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(ModItems.TORIVORIAN_SWORD));
     }
 }

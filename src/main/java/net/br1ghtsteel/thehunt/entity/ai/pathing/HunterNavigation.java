@@ -29,6 +29,7 @@ public class HunterNavigation extends EntityNavigation {
     private AbstractHunterEntity hunterEntity;
     private DustColorTransitionParticleEffect nodeWalkMarker;
     private DustColorTransitionParticleEffect nodeBreakMarker;
+    private boolean showDebugPath = true;
 
     public HunterNavigation(AbstractHunterEntity hunterEntity, World world) {
         super(hunterEntity, world);
@@ -131,7 +132,7 @@ public class HunterNavigation extends EntityNavigation {
                 PathNode pathNode = this.currentPath.getNode(i);
                 Vec3d nodePos = new Vec3d(pathNode.x, pathNode.y, pathNode.z);
                 Vec3d targetPos = target.getPos().add(target.getVelocity().multiply(3.0F));
-                if (this.hunterEntity.getTarget() != null && targetPos.isInRange(nodePos, this.hunterEntity.getReachDistance() - 1f)) {
+                if (targetPos.isInRange(nodePos, this.hunterEntity.getReachDistance() - 1.6f)) {
                     this.currentPath.setLength(i);
                     return;
                 }
@@ -153,7 +154,7 @@ public class HunterNavigation extends EntityNavigation {
             return super.startMovingAlong(path, speed);
         }
 
-        if (path != null) {
+        if (this.showDebugPath && path != null) {
             for (int i = 0; i < path.getLength(); i++) {
                 PathNodeType pathNodeType = path.getNode(i).type;
                 Vec3d pathNodePos = path.getNode(i).getPos();
