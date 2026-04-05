@@ -1,23 +1,17 @@
 package net.br1ghtsteel.thehunt.entity.ai.pathing;
 
-import net.br1ghtsteel.thehunt.TheHunt;
 import net.br1ghtsteel.thehunt.entity.AbstractHunterEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.*;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.particle.DustColorTransitionParticleEffect;
-import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 

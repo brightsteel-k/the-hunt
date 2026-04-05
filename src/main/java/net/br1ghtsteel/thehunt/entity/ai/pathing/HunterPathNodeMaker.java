@@ -182,7 +182,7 @@ public class HunterPathNodeMaker extends PathNodeMaker {
             return diagNode.penalty >= 0.0F
                     && (zNode.y < pathNode.y || zNode.penalty >= 0.0F || bl)
                     && (xNode.y < pathNode.y || xNode.penalty >= 0.0F || bl)
-                    && (zNode.type != PathNodeType.BREACH || xNode.type != PathNodeType.BREACH);
+                    && (isMineableType(xNode.type) || isMineableType(zNode.type));
         } else {
             return false;
         }
@@ -382,6 +382,7 @@ public class HunterPathNodeMaker extends PathNodeMaker {
      * @return The node type at the least coordinates of the input box.
      */
     public PathNodeType findNearbyNodeTypes(BlockView world, int x, int y, int z, EnumSet<PathNodeType> nearbyTypes, PathNodeType type, BlockPos pos) {
+        int breachCount = 0;
         for (int i = 0; i < this.entityBlockXSize; i++) {
             for (int j = 0; j < this.entityBlockYSize; j++) {
                 for (int k = 0; k < this.entityBlockZSize; k++) {
@@ -394,7 +395,15 @@ public class HunterPathNodeMaker extends PathNodeMaker {
                         type = pathNodeType;
                     }
 
-                    nearbyTypes.add(pathNodeType);
+                    if (pathNodeType == PathNodeType.BREACH) {
+                        if (++breachCount > 1) {
+                            nearbyTypes.add(pathNodeType);
+                        } else {
+                            nearbyTypes.add(PathNodeType.STICKY_HONEY); // Remap STICKY_HONEY to a one-block breach case
+                        }
+                    } else {
+                        nearbyTypes.add(pathNodeType);
+                    }
                 }
             }
         }
@@ -539,8 +548,6 @@ public class HunterPathNodeMaker extends PathNodeMaker {
                 }
             } else if (block instanceof AbstractRailBlock) {
                 return PathNodeType.RAIL;
-            } else if (block instanceof LeavesBlock) {
-                return PathNodeType.LEAVES;
             } else if (!blockState.isIn(BlockTags.FENCES)
                     && !blockState.isIn(BlockTags.WALLS)
                     && (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.OPEN))) {
@@ -563,5 +570,16 @@ public class HunterPathNodeMaker extends PathNodeMaker {
                 || state.isOf(Blocks.MAGMA_BLOCK)
                 || CampfireBlock.isLitCampfire(state)
                 || state.isOf(Blocks.LAVA_CAULDRON);
+    }
+
+    public static boolean isMineableType(PathNodeType type) {
+        // Remap BREACH node type to signify breakable blocks
+        // Remap STICKY_HONEY note type to signify one-block BREACH cases
+        return type == PathNodeType.BREACH || type == PathNodeType.STICKY_HONEY;
+    }
+
+    public static PathNodeType buildableType() {
+        // Remap LEAVES node type to signify buildable areas
+        return PathNodeType.LEAVES;
     }
 }
