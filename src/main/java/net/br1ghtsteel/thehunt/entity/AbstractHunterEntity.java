@@ -30,7 +30,8 @@ public class AbstractHunterEntity extends HostileEntity {
         this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
-        this.setPathfindingPenalty(PathNodeType.BREACH, 32.0F);
+        this.setPathfindingPenalty(PathNodeType.BREACH, 32.0F); // Breaking blocks
+        this.setPathfindingPenalty(PathNodeType.LEAVES, 32.0F); // Building blocks
         this.miningSpeed = miningSpeed;
         this.reachDistance = reachDistance;
     }

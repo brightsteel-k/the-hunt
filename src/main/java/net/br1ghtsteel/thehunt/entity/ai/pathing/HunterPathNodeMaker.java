@@ -182,7 +182,7 @@ public class HunterPathNodeMaker extends PathNodeMaker {
             return diagNode.penalty >= 0.0F
                     && (zNode.y < pathNode.y || zNode.penalty >= 0.0F || bl)
                     && (xNode.y < pathNode.y || xNode.penalty >= 0.0F || bl)
-                    && (isMineableType(xNode.type) || isMineableType(zNode.type));
+                    && (!isMineableType(xNode.type) || !isMineableType(zNode.type));
         } else {
             return false;
         }
@@ -293,11 +293,11 @@ public class HunterPathNodeMaker extends PathNodeMaker {
 
                     while (pathNodeType == PathNodeType.OPEN) {
                         if (--y < this.entity.getWorld().getBottomY()) {
-                            return this.getBlockedNode(x, j, z);
+                            return this.getBuildableNode(x, j, z);
                         }
 
                         if (i++ >= this.entity.getSafeFallDistance()) {
-                            return this.getBlockedNode(x, y, z);
+                            return this.getBuildableNode(x, y, z);
                         }
 
                         pathNodeType = this.getNodeType(this.entity, x, y, z);
@@ -336,6 +336,11 @@ public class HunterPathNodeMaker extends PathNodeMaker {
         pathNode.type = type;
         pathNode.penalty = Math.max(pathNode.penalty, penalty);
         return pathNode;
+    }
+
+    private PathNode getBuildableNode(int x, int y, int z) {
+        // Remap LEAVES node type to signify a gap that can be built across
+        return this.getNodeWith(x, y, z, PathNodeType.LEAVES, this.entity.getPathfindingPenalty(PathNodeType.LEAVES));
     }
 
     private PathNode getBlockedNode(int x, int y, int z) {
@@ -396,10 +401,11 @@ public class HunterPathNodeMaker extends PathNodeMaker {
                     }
 
                     if (pathNodeType == PathNodeType.BREACH) {
-                        if (++breachCount > 1) {
-                            nearbyTypes.add(pathNodeType);
-                        } else {
+                        if (++breachCount == 1) {
                             nearbyTypes.add(PathNodeType.STICKY_HONEY); // Remap STICKY_HONEY to a one-block breach case
+                        } else {
+                            nearbyTypes.remove(PathNodeType.STICKY_HONEY);
+                            nearbyTypes.add(PathNodeType.BREACH);
                         }
                     } else {
                         nearbyTypes.add(pathNodeType);
