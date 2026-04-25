@@ -3,7 +3,9 @@ package net.br1ghtsteel.thehunt.entity;
 import net.br1ghtsteel.thehunt.TheHunt;
 import net.br1ghtsteel.thehunt.entity.ai.goal.BreakBlockOnPathGoal;
 import net.br1ghtsteel.thehunt.entity.ai.goal.HunterAttackGoal;
+import net.br1ghtsteel.thehunt.entity.ai.goal.JumpGapOnPathGoal;
 import net.br1ghtsteel.thehunt.item.ModItems;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.goal.*;
@@ -38,7 +40,8 @@ public class TorivorEntity extends AbstractHunterEntity {
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new BreakBlockOnPathGoal(this));
-        this.goalSelector.add(2, new HunterAttackGoal(this, 1, true));
+        this.goalSelector.add(2, new JumpGapOnPathGoal(this, 4, 2, Blocks.COBBLED_DEEPSLATE));
+        this.goalSelector.add(3, new HunterAttackGoal(this, 1, true));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, false));
         this.targetSelector.add(4, new ActiveTargetGoal<>(this, VillagerEntity.class, false));

@@ -22,6 +22,36 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumSet;
 
 public class HunterPathNodeMaker extends PathNodeMaker {
+
+    /**
+     * PathNodeTypes and their remappings:
+     *  BLOCKED(-1.0F),
+     * 	OPEN(0.0F),
+     * 	WALKABLE(0.0F),
+     * 	WALKABLE_DOOR(0.0F),
+     * 	TRAPDOOR(0.0F),
+     * 	POWDER_SNOW(-1.0F),
+     * 	DANGER_POWDER_SNOW(0.0F),
+     * 	FENCE(-1.0F),
+     * 	LAVA(-1.0F),
+     * 	WATER(8.0F),
+     * 	WATER_BORDER(8.0F),
+     * 	RAIL(0.0F),
+     * 	UNPASSABLE_RAIL(-1.0F),
+     * 	DANGER_FIRE(8.0F),
+     * 	DAMAGE_FIRE(16.0F),
+     * 	DANGER_OTHER(8.0F),
+     * 	DAMAGE_OTHER(-1.0F),
+     * 	DOOR_OPEN(0.0F),
+     * 	DOOR_WOOD_CLOSED(-1.0F),
+     * 	DOOR_IRON_CLOSED(-1.0F),
+     * 	BREACH(4.0F),            - OBSTRUCTED(32)
+     * 	LEAVES(-1.0F),           - BUILDABLE(32)
+     * 	STICKY_HONEY(8.0F),      - OBSTRUCTED_SINGLE(12)
+     * 	COCOA(0.0F),
+     * 	DAMAGE_CAUTIOUS(0.0F);
+     */
+
     public static final double Y_OFFSET = 0.5;
     private static final double MIN_STEP_HEIGHT = 1.125;
     private final Long2ObjectMap<PathNodeType> nodeTypes = new Long2ObjectOpenHashMap<>();
@@ -182,7 +212,7 @@ public class HunterPathNodeMaker extends PathNodeMaker {
             return diagNode.penalty >= 0.0F
                     && (zNode.y < pathNode.y || zNode.penalty >= 0.0F || bl)
                     && (xNode.y < pathNode.y || xNode.penalty >= 0.0F || bl)
-                    && (!isMineableType(xNode.type) || !isMineableType(zNode.type));
+                    && (!isObstructedType(xNode.type) || !isObstructedType(zNode.type));
         } else {
             return false;
         }
@@ -537,7 +567,7 @@ public class HunterPathNodeMaker extends PathNodeMaker {
         } else if (blockState.isOf(Blocks.CACTUS) || blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
             return PathNodeType.DAMAGE_OTHER;
         } else if (blockState.isOf(Blocks.HONEY_BLOCK)) {
-            return PathNodeType.STICKY_HONEY;
+            return PathNodeType.DANGER_OTHER;
         } else if (blockState.isOf(Blocks.COCOA)) {
             return PathNodeType.COCOA;
         } else if (!blockState.isOf(Blocks.WITHER_ROSE) && !blockState.isOf(Blocks.POINTED_DRIPSTONE)) {
@@ -578,13 +608,13 @@ public class HunterPathNodeMaker extends PathNodeMaker {
                 || state.isOf(Blocks.LAVA_CAULDRON);
     }
 
-    public static boolean isMineableType(PathNodeType type) {
+    public static boolean isObstructedType(PathNodeType type) {
         // Remap BREACH node type to signify breakable blocks
         // Remap STICKY_HONEY note type to signify one-block BREACH cases
         return type == PathNodeType.BREACH || type == PathNodeType.STICKY_HONEY;
     }
 
-    public static PathNodeType buildableType() {
+    public static PathNodeType isBuildableType() {
         // Remap LEAVES node type to signify buildable areas
         return PathNodeType.LEAVES;
     }
